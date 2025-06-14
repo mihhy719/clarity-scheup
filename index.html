@@ -50,14 +50,16 @@
       background: #eee;
       padding: 8px;
       text-align: center;
-      font-size: 0.85em;
+      font-size: 1em;
+      font-weight: bold;
       border-bottom: 1px solid #ccc;
     }
     .lesson-box {
-      padding: 6px;
+      padding: 12px;
       margin: 6px;
       border-radius: 4px;
-      font-size: 0.75em;
+      font-size: 1em;
+      line-height: 1.5em;
       color: #000;
       text-align: center;
       background-color: #f9f9f9;
@@ -146,7 +148,6 @@
   <script>
     const countdown = document.getElementById("countdown");
     const dynamic = document.getElementById("dynamic-days");
-    const freshLoad = performance.navigation.type === 1;
 
     function openModal() {
       document.getElementById("seatModal").style.display = "flex";
@@ -197,20 +198,27 @@
       { text: "20:30 - 21:15\nBB2 SUMMER2\nYoshifumi", link: true, cls: "lesson-orange" }
     ]));
 
-    let lastTriggerMinute = null;
+    let displayUntil = 0;
+    function checkDynamicVisibility() {
+      const now = Date.now();
+      if (now < displayUntil) {
+        dynamic.style.display = "flex";
+      } else {
+        dynamic.style.display = "none";
+      }
+    }
+
     setInterval(() => {
       const now = new Date();
       const min = now.getMinutes();
       const sec = now.getSeconds();
       countdown.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
 
-      if (freshLoad && min % 3 === 0 && sec < 3 && lastTriggerMinute !== min) {
+      if (min % 3 === 0 && sec < 3) {
+        displayUntil = Date.now() + 2 * 60 * 1000;
         dynamic.style.display = "flex";
-        lastTriggerMinute = min;
-        setTimeout(() => {
-          dynamic.style.display = "none";
-        }, 2 * 60 * 1000);
       }
+      checkDynamicVisibility();
     }, 1000);
 
     function createDayColumn(dateStr, lessons = []) {
