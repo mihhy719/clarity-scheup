@@ -30,16 +30,19 @@
       background: #fff;
       position: relative;
       white-space: nowrap;
+      height: 600px;
     }
     .day-rows {
       display: inline-flex;
+      height: 100%;
     }
     .day-row {
       display: inline-flex;
+      height: 100%;
     }
     .day-column {
       flex: 0 0 auto;
-      min-width: 140px;
+      width: 33.3vw;
       border-right: 1px solid #ccc;
       display: inline-block;
     }
@@ -59,10 +62,12 @@
       text-align: center;
       background-color: #f9f9f9;
       border: 1px solid #ddd;
+      white-space: normal;
     }
     .lesson-orange { background-color: #ffa500; color: black; }
     .lesson-yellow { background-color: #ffff99; color: black; }
     .lesson-blue { background-color: #00bfff; color: white; }
+    .lesson-white { background-color: white; color: black; border: 1px solid #aaa; }
     .highlight { border-left: 6px solid #f60; cursor: pointer; font-weight: bold; }
     #countdown {
       text-align: center;
@@ -122,7 +127,7 @@
   <div id="countdown">00:00</div>
 
   <div class="scroll-container">
-    <div class="day-rows">
+    <div class="day-rows" onclick="event.stopPropagation()">
       <div class="day-row" id="fixed-days"></div>
       <div class="day-row" id="dynamic-days" style="display:none"></div>
     </div>
@@ -141,6 +146,7 @@
   <script>
     const countdown = document.getElementById("countdown");
     const dynamic = document.getElementById("dynamic-days");
+    const freshLoad = performance.navigation.type === 1;
 
     function openModal() {
       document.getElementById("seatModal").style.display = "flex";
@@ -160,16 +166,16 @@
     }
 
     const samples = [
-      { text: "08:45 - 09:30 BB1 Comp 1", instructor: "S.Risa", cls: "lesson-yellow" },
-      { text: "10:00 - 10:45 BB2 10s 4", instructor: "Shunsuke", cls: "lesson-orange" },
-      { text: "11:15 - 12:00 BB2 10s 4", instructor: "Shunsuke", cls: "lesson-orange" },
-      { text: "12:30 - 13:15 BB1 House 1", instructor: "Ryo", cls: "lesson-yellow" },
-      { text: "15:00 - 15:45 BB1 10s 2", instructor: "Hiromu", cls: "lesson-yellow" },
-      { text: "16:15 - 17:00 BSB Rock 1", instructor: "Hiromu", cls: "lesson-blue" }
+      { text: "08:45 - 09:30\nBB1 Comp 1\nS.Risa", cls: "lesson-yellow" },
+      { text: "10:00 - 10:45\nBB2 10s 4\nShunsuke", cls: "lesson-orange" },
+      { text: "11:15 - 12:00\nBB2 10s 4\nShunsuke", cls: "lesson-orange" },
+      { text: "12:30 - 13:15\nBB1 House 1\nRyo", cls: "lesson-yellow" },
+      { text: "15:00 - 15:45\nBB1 10s 2\nHiromu", cls: "lesson-yellow" },
+      { text: "16:15 - 17:00\nBSB Rock 1\nHiromu", cls: "lesson-blue" }
     ];
 
     const fixedDays = document.getElementById("fixed-days");
-    for (let i = 0; i <= 18; i++) {
+    for (let i = 0; i < 18; i++) {
       const date = new Date(2024, 5, 16 + i);
       const mm = date.getMonth() + 1;
       const dd = date.getDate();
@@ -179,24 +185,17 @@
       const colLessons = [];
       for (let j = 0; j < 6; j++) {
         const sample = samples[Math.floor(Math.random() * samples.length)];
-        colLessons.push({ text: sample.text, instructor: sample.instructor, cls: sample.cls });
+        colLessons.push({ text: sample.text, cls: sample.cls });
       }
-      const col = createDayColumn(label, colLessons);
-      fixedDays.appendChild(col);
+      fixedDays.appendChild(createDayColumn(label, colLessons));
     }
 
     const dynamicDays = document.getElementById("dynamic-days");
-    for (let i = 5; i <= 11; i++) {
-      if (i === 10) {
-        dynamicDays.appendChild(createDayColumn("7/10 (水)", [
-          { text: "18:00 - 19:00 FEEL HIGH", instructor: "S.Kaori", link: true, cls: "lesson-blue" },
-          { text: "19:30 - 20:15 BB2 Rock2", instructor: "Yoshifumi & S.Kaori", link: true, cls: "lesson-orange" },
-          { text: "20:30 - 21:15 BB2 SUMMER2", instructor: "Yoshifumi", link: true, cls: "lesson-orange" }
-        ]));
-      } else {
-        dynamicDays.appendChild(createDayColumn(`7/${i} (${"金土日月火水木"[i - 5]})`));
-      }
-    }
+    dynamicDays.appendChild(createDayColumn("7/10 (水)", [
+      { text: "18:00 - 19:00\nFEEL HIGH\nS.Kaori", link: true, cls: "lesson-white" },
+      { text: "19:30 - 20:15\nBB2 Rock2\nYoshifumi & S.Kaori", link: true, cls: "lesson-orange" },
+      { text: "20:30 - 21:15\nBB2 SUMMER2\nYoshifumi", link: true, cls: "lesson-orange" }
+    ]));
 
     let lastTriggerMinute = null;
     setInterval(() => {
@@ -205,7 +204,7 @@
       const sec = now.getSeconds();
       countdown.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
 
-      if (min % 3 === 0 && sec < 3 && lastTriggerMinute !== min) {
+      if (freshLoad && min % 3 === 0 && sec < 3 && lastTriggerMinute !== min) {
         dynamic.style.display = "flex";
         lastTriggerMinute = min;
         setTimeout(() => {
@@ -229,7 +228,7 @@
         if (lesson.link) {
           box.onclick = () => openModal();
         }
-        box.innerHTML = `${lesson.text}<br>${lesson.instructor}`;
+        box.innerHTML = lesson.text.replace(/\n/g, '<br>');
         col.appendChild(box);
       });
       return col;
