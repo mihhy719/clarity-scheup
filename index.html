@@ -29,19 +29,18 @@
       overflow-x: auto;
       background: #fff;
       position: relative;
-      white-space: nowrap;
+      max-width: 420px; 
     }
     .day-rows {
-      display: inline-flex;
+      display: flex;
+      min-width: 420px; /* 140px * 3 days */
     }
     .day-row {
-      display: inline-flex;
+      display: flex;
     }
     .day-column {
-      flex: 0 0 calc(100vw / 3);
+      flex: 0 0 140px;
       border-right: 1px solid #ccc;
-      display: inline-block;
-      box-sizing: border-box;
     }
     .day-header {
       background: #eee;
