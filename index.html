@@ -30,19 +30,16 @@
       background: #fff;
       position: relative;
       white-space: nowrap;
-      height: 600px;
     }
     .day-rows {
       display: inline-flex;
-      height: 100%;
     }
     .day-row {
       display: inline-flex;
-      height: 100%;
     }
     .day-column {
       flex: 0 0 auto;
-      width: 33.3vw;
+      min-width: 140px;
       border-right: 1px solid #ccc;
       display: inline-block;
     }
@@ -50,27 +47,25 @@
       background: #eee;
       padding: 8px;
       text-align: center;
-      font-size: 1em;
-      font-weight: bold;
+      font-size: 0.85em;
       border-bottom: 1px solid #ccc;
     }
     .lesson-box {
-      padding: 12px;
+      padding: 10px;
       margin: 6px;
+      border: 1px solid #ddd;
       border-radius: 4px;
       font-size: 1em;
-      line-height: 1.5em;
       color: #000;
       text-align: center;
       background-color: #f9f9f9;
-      border: 1px solid #ddd;
-      white-space: normal;
     }
-    .lesson-orange { background-color: #ffa500; color: black; }
-    .lesson-yellow { background-color: #ffff99; color: black; }
-    .lesson-blue { background-color: #00bfff; color: white; }
-    .lesson-white { background-color: white; color: black; border: 1px solid #aaa; }
-    .highlight { border-left: 6px solid #f60; cursor: pointer; font-weight: bold; }
+    .highlight {
+      background-color: #fff;
+      border-left: 6px solid #f60;
+      color: #000;
+      cursor: pointer;
+    }
     #countdown {
       text-align: center;
       margin: 10px;
@@ -92,30 +87,58 @@
     }
     .modal-content {
       background: #fff;
-      padding: 20px;
       width: 90%;
-      max-width: 400px;
+      max-width: 700px;
       border-radius: 8px;
+      padding: 20px;
       text-align: center;
     }
     .modal-content h2 {
-      margin-top: 0;
-    }
-    .modal-seat {
-      background: #eee;
+      font-size: 1em;
+      background: #fff;
       padding: 10px;
-      margin: 10px auto;
+      border-bottom: 1px solid #ccc;
+    }
+    .seat-map {
+      background: #000;
+      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+    }
+    .seat {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #fff;
+      color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0.8em;
       cursor: pointer;
-      max-width: 100px;
-      border-radius: 5px;
+    }
+    .seat.reserved {
+      background: #555;
+      color: #aaa;
+      cursor: not-allowed;
     }
     .modal-actions {
       margin-top: 20px;
     }
     .modal button {
       padding: 8px 16px;
-      margin: 0 8px;
       font-size: 1em;
+    }
+    .confirm-button {
+      background-color: #ddd;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1em;
+      border-radius: 4px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -127,28 +150,45 @@
     <div>最終週へ</div>
   </div>
   <div id="countdown">00:00</div>
-
   <div class="scroll-container">
-    <div class="day-rows" onclick="event.stopPropagation()">
-      <div class="day-row" id="fixed-days"></div>
-      <div class="day-row" id="dynamic-days" style="display:none"></div>
-    </div>
-  </div>
-
-  <div class="modal" id="seatModal">
-    <div class="modal-content">
-      <h2>※お好きなバイク番号を選んで予約を確定して下さい。</h2>
-      <div class="modal-seat" onclick="confirmSeat()">④番を予約</div>
-      <div class="modal-actions">
-        <button onclick="closeModal()">閉じる</button>
+    <div class="day-rows">
+      <div class="day-column">
+        <div class="day-header">7/10 (水)</div>
+        <div class="lesson-box highlight" onclick="openModal()">
+          18:00 - 19:00<br>FEEL HIGH<br>S.Kaori
+        </div>
+        <div class="lesson-box highlight" onclick="openModal()" style="background:#f90">
+          19:30 - 20:15<br>BB2 Rock2<br>Yoshifumi & S.Kaori
+        </div>
+        <div class="lesson-box highlight" onclick="openModal()" style="background:#f90">
+          20:30 - 21:15<br>BB2 SUMMER2<br>Yoshifumi
+        </div>
       </div>
     </div>
   </div>
-
+  <div class="modal" id="seatModal">
+    <div class="modal-content">
+      <h2>※お好きなバイク番号を選んで予約を確定して下さい。</h2>
+      <div class="seat-map">
+        <div class="seat reserved">1</div>
+        <div class="seat reserved">2</div>
+        <div class="seat reserved">3</div>
+        <div class="seat" onclick="confirmSeat()">4</div>
+        <div class="seat reserved">5</div>
+      </div>
+      <div class="modal-actions">
+        <button onclick="closeModal()">閉じる</button>
+        <button class="confirm-button">予約を確定する</button>
+      </div>
+    </div>
+  </div>
   <script>
     const countdown = document.getElementById("countdown");
-    const dynamic = document.getElementById("dynamic-days");
-
+    function updateTime() {
+      const now = new Date();
+      countdown.textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    }
+    setInterval(updateTime, 1000);
     function openModal() {
       document.getElementById("seatModal").style.display = "flex";
     }
@@ -156,90 +196,8 @@
       document.getElementById("seatModal").style.display = "none";
     }
     function confirmSeat() {
-      const win = Math.random() < 0.7;
-      alert(win ? "✨ 4番、あなたの席になりました ✨" : "😢 席が埋まっていました。再挑戦を。");
+      alert("✨ 4番、あなたの席になりました ✨");
       closeModal();
-    }
-
-    function getWeekday(dateString) {
-      const date = new Date(dateString);
-      return "日月火水木金土"[date.getDay()];
-    }
-
-    const samples = [
-      { text: "08:45 - 09:30\nBB1 Comp 1\nS.Risa", cls: "lesson-yellow" },
-      { text: "10:00 - 10:45\nBB2 10s 4\nShunsuke", cls: "lesson-orange" },
-      { text: "11:15 - 12:00\nBB2 10s 4\nShunsuke", cls: "lesson-orange" },
-      { text: "12:30 - 13:15\nBB1 House 1\nRyo", cls: "lesson-yellow" },
-      { text: "15:00 - 15:45\nBB1 10s 2\nHiromu", cls: "lesson-yellow" },
-      { text: "16:15 - 17:00\nBSB Rock 1\nHiromu", cls: "lesson-blue" }
-    ];
-
-    const fixedDays = document.getElementById("fixed-days");
-    for (let i = 0; i < 18; i++) {
-      const date = new Date(2024, 5, 16 + i);
-      const mm = date.getMonth() + 1;
-      const dd = date.getDate();
-      const weekday = getWeekday(`${date.getFullYear()}-${mm}-${dd}`);
-      const label = `${mm}/${dd} (${weekday})`;
-
-      const colLessons = [];
-      for (let j = 0; j < 6; j++) {
-        const sample = samples[Math.floor(Math.random() * samples.length)];
-        colLessons.push({ text: sample.text, cls: sample.cls });
-      }
-      fixedDays.appendChild(createDayColumn(label, colLessons));
-    }
-
-    const dynamicDays = document.getElementById("dynamic-days");
-    dynamicDays.appendChild(createDayColumn("7/10 (水)", [
-      { text: "18:00 - 19:00\nFEEL HIGH\nS.Kaori", link: true, cls: "lesson-white" },
-      { text: "19:30 - 20:15\nBB2 Rock2\nYoshifumi & S.Kaori", link: true, cls: "lesson-orange" },
-      { text: "20:30 - 21:15\nBB2 SUMMER2\nYoshifumi", link: true, cls: "lesson-orange" }
-    ]));
-
-    let displayUntil = 0;
-    function checkDynamicVisibility() {
-      const now = Date.now();
-      if (now < displayUntil) {
-        dynamic.style.display = "flex";
-      } else {
-        dynamic.style.display = "none";
-      }
-    }
-
-    setInterval(() => {
-      const now = new Date();
-      const min = now.getMinutes();
-      const sec = now.getSeconds();
-      countdown.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-
-      if (min % 3 === 0 && sec < 3) {
-        displayUntil = Date.now() + 2 * 60 * 1000;
-        dynamic.style.display = "flex";
-      }
-      checkDynamicVisibility();
-    }, 1000);
-
-    function createDayColumn(dateStr, lessons = []) {
-      const col = document.createElement("div");
-      col.className = "day-column";
-
-      const head = document.createElement("div");
-      head.className = "day-header";
-      head.textContent = dateStr;
-      col.appendChild(head);
-
-      lessons.forEach(lesson => {
-        const box = document.createElement("div");
-        box.className = `lesson-box ${lesson.cls || ''} ${lesson.link ? 'highlight' : ''}`.trim();
-        if (lesson.link) {
-          box.onclick = () => openModal();
-        }
-        box.innerHTML = lesson.text.replace(/\n/g, '<br>');
-        col.appendChild(box);
-      });
-      return col;
     }
   </script>
 </body>
