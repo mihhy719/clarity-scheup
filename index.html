@@ -34,12 +34,14 @@
     .day-rows {
       display: inline-flex;
     }
+    .day-row {
+      display: inline-flex;
+    }
     .day-column {
-      width: 33.33vw;
-      min-width: 240px;
+      flex: 0 0 auto;
+      min-width: 140px;
       border-right: 1px solid #ccc;
       display: inline-block;
-      vertical-align: top;
     }
     .day-header {
       background: #eee;
@@ -49,26 +51,22 @@
       border-bottom: 1px solid #ccc;
     }
     .lesson-box {
-      padding: 10px;
+      padding: 10px 6px;
       margin: 6px;
       background-color: #f9f9f9;
       border: 1px solid #ddd;
       border-radius: 4px;
       font-size: 1em;
-      line-height: 1.5em;
+      color: #aaa;
       text-align: center;
-      color: #000;
-      white-space: normal;
+      line-height: 1.4;
     }
     .highlight {
       background-color: #fff;
       border-left: 6px solid #f60;
+      color: #000;
       cursor: pointer;
     }
-    .white { background-color: #fff; }
-    .orange { background-color: #FFA726; color: #000; }
-    .yellow { background-color: #FFFF99; color: #000; }
-    .blue { background-color: #29B6F6; color: #000; }
     #countdown {
       text-align: center;
       margin: 10px;
@@ -90,22 +88,39 @@
     }
     .modal-content {
       background: #fff;
-      padding: 20px;
+      padding: 30px;
       width: 90%;
       max-width: 500px;
       border-radius: 8px;
       text-align: center;
     }
-    .modal-seatmap {
-      background: #000;
-      padding: 10px;
-      margin: 10px auto;
-      color: white;
-      border-radius: 4px;
-      font-size: 0.9em;
+    .modal-content h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      font-size: 1em;
+    }
+    .modal-seat-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .modal-seat-button {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #eee;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .modal-seat-button.active {
+      background-color: #f66;
+      color: #fff;
     }
     .modal-actions {
-      margin-top: 20px;
+      margin-top: 10px;
     }
     .modal button {
       padding: 8px 16px;
@@ -124,19 +139,21 @@
   <div id="countdown">00:00</div>
 
   <div class="scroll-container">
-    <div class="day-rows" id="fixed-days"></div>
-    <div class="day-rows" id="dynamic-days" style="display:none"></div>
+    <div class="day-rows">
+      <div class="day-row" id="fixed-days"></div>
+      <div class="day-row" id="dynamic-days" style="display:none"></div>
+    </div>
   </div>
 
   <div class="modal" id="seatModal">
     <div class="modal-content">
-      <div class="modal-seatmap">
-        ※お好きなバイク番号を選んで予約を確定して下さい。<br><br>
-        [1] [2] [3] <span style="color: #f33; font-weight: bold;">[4]</span> ← ドセン狙い！
+      <h2>※お好きなバイク番号を選んで予約を確定して下さい。</h2>
+      <div class="modal-seat-grid" id="seatGrid"></div>
+      <div class="modal-actions" id="seatActionButtons" style="display:none;">
+        <button onclick="confirmSeatFinal()">チケットで予約する</button>
       </div>
       <div class="modal-actions">
         <button onclick="closeModal()">閉じる</button>
-        <button onclick="confirmSeat()">予約を確定する</button>
       </div>
     </div>
   </div>
@@ -144,83 +161,37 @@
   <script>
     const countdown = document.getElementById("countdown");
     const dynamic = document.getElementById("dynamic-days");
-    const fixedDays = document.getElementById("fixed-days");
 
     function openModal() {
       document.getElementById("seatModal").style.display = "flex";
+      const seatGrid = document.getElementById("seatGrid");
+      const seatActions = document.getElementById("seatActionButtons");
+      seatGrid.innerHTML = "";
+      seatActions.style.display = "none";
+      for (let i = 1; i <= 10; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        btn.className = "modal-seat-button";
+        if (i === 4) {
+          btn.onclick = () => {
+            btn.classList.add("active");
+            seatActions.style.display = "block";
+          };
+        } else {
+          btn.disabled = true;
+        }
+        seatGrid.appendChild(btn);
+      }
     }
+
     function closeModal() {
       document.getElementById("seatModal").style.display = "none";
     }
-    function confirmSeat() {
-      const win = Math.random() < 0.7;
-      alert(win ? "✨ 4番、あなたの席になりました ✨" : "😢 席が埋まっていました。再挑戦を。");
+
+    function confirmSeatFinal() {
+      alert("✨ 予約が完了しました ✨");
       closeModal();
     }
-
-    function createDayColumn(dateStr, lessons = []) {
-      const col = document.createElement("div");
-      col.className = "day-column";
-
-      const head = document.createElement("div");
-      head.className = "day-header";
-      head.textContent = dateStr;
-      col.appendChild(head);
-
-      lessons.forEach(lesson => {
-        const box = document.createElement("div");
-        box.className = `lesson-box ${lesson.color || ''}`;
-        if (lesson.link) box.onclick = openModal;
-        box.innerHTML = `${lesson.time}<br>${lesson.title}<br>${lesson.instructor}`;
-        col.appendChild(box);
-      });
-      return col;
-    }
-
-    const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
-    const baseDate = new Date("2025-06-16");
-    for (let i = 0; i < 19; i++) {
-      const d = new Date(baseDate);
-      d.setDate(baseDate.getDate() + i);
-      const dateStr = `${d.getMonth() + 1}/${d.getDate()} (${dayNames[d.getDay()]})`;
-      const lessons = i === 18 ? [
-        { time: "08:45 - 09:30", title: "BB1 Comp 1", instructor: "S.Risa", color: "yellow" },
-        { time: "10:00 - 10:45", title: "BB2 10s 4", instructor: "Shunsuke", color: "orange" },
-        { time: "11:15 - 12:00", title: "BB1 House 1", instructor: "Ryo", color: "yellow" },
-        { time: "12:30 - 13:15", title: "BB2 CVHS", instructor: "Hiromu", color: "orange" },
-        { time: "15:00 - 15:45", title: "BSB Rock 1", instructor: "Hiromu", color: "blue" },
-        { time: "16:30 - 17:15", title: "BB2 NOW 1", instructor: "Hiromu", color: "orange" },
-        { time: "18:30 - 19:15", title: "BB2 10s 3", instructor: "Meg", color: "orange" },
-        { time: "19:45 - 20:30", title: "BB1 Comp 1", instructor: "S.Risa", color: "yellow" }
-      ] : [];
-      fixedDays.appendChild(createDayColumn(dateStr, lessons));
-    }
-
-    const dynamicDays = document.getElementById("dynamic-days");
-    const now = new Date();
-    const minutes = now.getMinutes();
-    const slot = minutes % 3;
-    if (slot === 0 || slot === 1) {
-      for (let i = 5; i <= 11; i++) {
-        const d = new Date("2025-07-05T00:00:00");
-        d.setDate(d.getDate() + (i - 5));
-        const dateStr = `${d.getMonth() + 1}/${d.getDate()} (${dayNames[d.getDay()]})`;
-        const lessons = (i === 10) ? [
-          { time: "18:00 - 19:00", title: "FEEL HIGH", instructor: "S.Kaori", color: "white", link: true },
-          { time: "19:30 - 20:15", title: "BB2 Rock2", instructor: "Yoshifumi & S.Kaori", color: "orange", link: true },
-          { time: "20:30 - 21:15", title: "BB2 SUMMER2", instructor: "Yoshifumi", color: "orange", link: true }
-        ] : [];
-        dynamicDays.appendChild(createDayColumn(dateStr, lessons));
-      }
-      dynamic.style.display = "inline-flex";
-    }
-
-    setInterval(() => {
-      const now = new Date();
-      const min = now.getMinutes();
-      const sec = now.getSeconds();
-      countdown.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-    }, 1000);
   </script>
 </body>
 </html>
