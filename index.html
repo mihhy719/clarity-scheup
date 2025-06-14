@@ -102,10 +102,10 @@
     .seat-map {
       background: #000;
       padding: 20px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 6px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      justify-items: center;
     }
     .seat {
       width: 28px;
@@ -151,20 +151,7 @@
   </div>
   <div id="countdown">00:00</div>
   <div class="scroll-container">
-    <div class="day-rows">
-      <div class="day-column">
-        <div class="day-header">7/10 (水)</div>
-        <div class="lesson-box highlight" onclick="openModal()">
-          18:00 - 19:00<br>FEEL HIGH<br>S.Kaori
-        </div>
-        <div class="lesson-box highlight" onclick="openModal()" style="background:#f90">
-          19:30 - 20:15<br>BB2 Rock2<br>Yoshifumi & S.Kaori
-        </div>
-        <div class="lesson-box highlight" onclick="openModal()" style="background:#f90">
-          20:30 - 21:15<br>BB2 SUMMER2<br>Yoshifumi
-        </div>
-      </div>
-    </div>
+    <div class="day-rows" id="schedule-container"></div>
   </div>
   <div class="modal" id="seatModal">
     <div class="modal-content">
@@ -184,11 +171,19 @@
   </div>
   <script>
     const countdown = document.getElementById("countdown");
+    const scheduleContainer = document.getElementById("schedule-container");
+    const dynamicColumns = [];
+
     function updateTime() {
       const now = new Date();
       countdown.textContent = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const totalMinutes = now.getMinutes();
+
+      if (totalMinutes % 3 === 0 && !document.getElementById("dynamic-added")) {
+        addDynamicColumn();
+      }
     }
-    setInterval(updateTime, 1000);
+
     function openModal() {
       document.getElementById("seatModal").style.display = "flex";
     }
@@ -199,6 +194,50 @@
       alert("✨ 4番、あなたの席になりました ✨");
       closeModal();
     }
+
+    function createColumn(date, lessons = [], id = '') {
+      const column = document.createElement("div");
+      column.className = "day-column";
+      if (id) column.id = id;
+      const header = document.createElement("div");
+      header.className = "day-header";
+      header.textContent = date;
+      column.appendChild(header);
+
+      lessons.forEach(text => {
+        const box = document.createElement("div");
+        box.className = "lesson-box highlight";
+        box.innerHTML = text;
+        box.onclick = openModal;
+        column.appendChild(box);
+      });
+      return column;
+    }
+
+    function initSchedule() {
+      for (let i = 2; i <= 4; i++) {
+        scheduleContainer.appendChild(createColumn(`7/${i} (火)`));
+      }
+    }
+
+    function addDynamicColumn() {
+      const lessons = [
+        "18:00 - 19:00<br>FEEL HIGH<br>S.Kaori",
+        "19:30 - 20:15<br>BB2 Rock2<br>Yoshifumi & S.Kaori",
+        "20:30 - 21:15<br>BB2 SUMMER2<br>Yoshifumi"
+      ];
+      const col = createColumn("7/10 (水)", lessons, "dynamic-added");
+      scheduleContainer.appendChild(col);
+
+      setTimeout(() => {
+        if (col && col.parentNode) {
+          col.remove();
+        }
+      }, 2 * 60 * 1000);
+    }
+
+    initSchedule();
+    setInterval(updateTime, 1000);
   </script>
 </body>
 </html>
