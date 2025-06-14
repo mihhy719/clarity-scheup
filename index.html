@@ -37,12 +37,12 @@
     .day-row {
       display: inline-flex;
     }
-.day-column {
-  flex: 0 0 calc(100vw / 3);
-  border-right: 1px solid #ccc;
-  display: inline-block;
-  box-sizing: border-box;
-}
+    .day-column {
+      flex: 0 0 calc(100vw / 3);
+      border-right: 1px solid #ccc;
+      display: inline-block;
+      box-sizing: border-box;
+    }
     .day-header {
       background: #eee;
       padding: 8px;
@@ -145,11 +145,11 @@
     </div>
   </div>
   <div class="modal" id="seatModal">
-    <div class="modal-content">
+    <div class="modal-content" id="modalContent">
       <h2>※お好きなバイク番号を選んで予約を確定して下さい。</h2>
       <div class="modal-seat-grid" id="seatGrid"></div>
       <div class="modal-actions" id="seatActionButtons" style="display:none;">
-        <button onclick="confirmSeatFinal()">チケットで予約する</button>
+        <button onclick="showFinalConfirmation()">予約を確定する</button>
       </div>
       <div class="modal-actions">
         <button onclick="closeModal()">閉じる</button>
@@ -165,8 +165,21 @@
       document.getElementById("seatModal").style.display = "flex";
       const seatGrid = document.getElementById("seatGrid");
       const seatActions = document.getElementById("seatActionButtons");
-      seatGrid.innerHTML = "";
-      seatActions.style.display = "none";
+      const modalContent = document.getElementById("modalContent");
+
+      modalContent.innerHTML = `
+        <h2>※お好きなバイク番号を選んで予約を確定して下さい。</h2>
+        <div class="modal-seat-grid" id="seatGrid"></div>
+        <div class="modal-actions" id="seatActionButtons" style="display:none;">
+          <button onclick="showFinalConfirmation()">予約を確定する</button>
+        </div>
+        <div class="modal-actions">
+          <button onclick="closeModal()">閉じる</button>
+        </div>
+      `;
+
+      const seatGridNew = document.getElementById("seatGrid");
+      const seatActionsNew = document.getElementById("seatActionButtons");
       for (let i = 1; i <= 10; i++) {
         const btn = document.createElement("button");
         btn.textContent = i;
@@ -174,22 +187,32 @@
         if (i === 4) {
           btn.onclick = () => {
             btn.classList.add("active");
-            seatActions.style.display = "block";
+            seatActionsNew.style.display = "block";
           };
         } else {
           btn.disabled = true;
         }
-        seatGrid.appendChild(btn);
+        seatGridNew.appendChild(btn);
       }
+    }
+
+    function showFinalConfirmation() {
+      const modalContent = document.getElementById("modalContent");
+      modalContent.innerHTML = `
+        <div class="modal-actions">
+          <button onclick="confirmSeatFinal()">チケットで予約する</button>
+          <button onclick="closeModal()">閉じる</button>
+        </div>
+      `;
+    }
+
+    function confirmSeatFinal() {
+      const modalContent = document.getElementById("modalContent");
+      modalContent.innerHTML = `<h2>✨ 予約が完了しました ✨</h2>`;
     }
 
     function closeModal() {
       document.getElementById("seatModal").style.display = "none";
-    }
-
-    function confirmSeatFinal() {
-      alert("✨ 予約が完了しました ✨");
-      closeModal();
     }
 
     function createDayColumn(dateStr, lessons = []) {
