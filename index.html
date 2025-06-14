@@ -188,6 +188,22 @@
       }
     }
 
+    let lastTriggerMinute = null;
+    setInterval(() => {
+      const now = new Date();
+      const min = now.getMinutes();
+      const sec = now.getSeconds();
+      countdown.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+
+      if (min % 3 === 0 && sec < 3 && lastTriggerMinute !== min) {
+        dynamic.style.display = "flex";
+        lastTriggerMinute = min;
+        setTimeout(() => {
+          dynamic.style.display = "none";
+        }, 2 * 60 * 1000);
+      }
+    }, 1000);
+
     function createDayColumn(dateStr, lessons = []) {
       const col = document.createElement("div");
       col.className = "day-column";
@@ -208,22 +224,6 @@
       });
       return col;
     }
-
-    let lastTrigger = null;
-    setInterval(() => {
-      const now = new Date();
-      const min = now.getMinutes();
-      const sec = now.getSeconds();
-      countdown.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-
-      if (min % 3 === 0 && sec === 0 && lastTrigger !== min) {
-        dynamic.style.display = "flex";
-        lastTrigger = min;
-        setTimeout(() => {
-          dynamic.style.display = "none";
-        }, 2 * 60 * 1000 + 1000);
-      }
-    }, 1000);
   </script>
 </body>
 </html>
