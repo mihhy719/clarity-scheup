@@ -79,6 +79,45 @@
       font-weight: bold;
       color: #007aff;
     }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .modal-content h2 {
+      margin-top: 0;
+    }
+    .modal-seat {
+      background: #eee;
+      padding: 10px;
+      margin: 10px auto;
+      cursor: pointer;
+      max-width: 100px;
+      border-radius: 5px;
+    }
+    .modal-actions {
+      margin-top: 20px;
+    }
+    .modal button {
+      padding: 8px 16px;
+      margin: 0 8px;
+      font-size: 1em;
+    }
   </style>
 </head>
 <body>
@@ -97,9 +136,31 @@
     </div>
   </div>
 
+  <div class="modal" id="seatModal">
+    <div class="modal-content">
+      <h2>※お好きなバイク番号を選んで予約を確定して下さい。</h2>
+      <div class="modal-seat" onclick="confirmSeat()">④番を予約</div>
+      <div class="modal-actions">
+        <button onclick="closeModal()">閉じる</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const countdown = document.getElementById("countdown");
     const dynamic = document.getElementById("dynamic-days");
+
+    function openModal() {
+      document.getElementById("seatModal").style.display = "flex";
+    }
+    function closeModal() {
+      document.getElementById("seatModal").style.display = "none";
+    }
+    function confirmSeat() {
+      const win = Math.random() < 0.7;
+      alert(win ? "✨ 4番、あなたの席になりました ✨" : "😢 席が埋まっていました。再挑戦を。");
+      closeModal();
+    }
 
     function createDayColumn(dateStr, lessons = []) {
       const col = document.createElement("div");
@@ -114,7 +175,7 @@
         const box = document.createElement("div");
         box.className = lesson.link ? "lesson-box highlight" : "lesson-box";
         if (lesson.link) {
-          box.onclick = () => window.location.href = "seats.html";
+          box.onclick = () => openModal();
         }
         box.innerHTML = lesson.link ? `${lesson.text}<br>${lesson.instructor}` : lesson.text;
         col.appendChild(box);
