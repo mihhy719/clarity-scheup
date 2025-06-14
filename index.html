@@ -46,10 +46,17 @@
     .lesson-box {
       padding: 6px;
       margin: 6px;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 0.8em;
+      color: #aaa;
+      text-align: center;
+    }
+    .highlight {
       background-color: #fff;
       border-left: 6px solid #f60;
-      border-radius: 4px;
-      font-size: 0.85em;
+      color: #000;
     }
     .lesson-box a {
       text-decoration: none;
@@ -74,15 +81,68 @@
   </div>
   <div id="countdown">00:00</div>
 
-  <div class="day-row">
-    <div class="day-column">
-      <div class="day-header">7/10(水)</div>
-      <div class="lesson-box"><a href="seats.html">18:00 FEEL HIGH</a><br>S.Kaori & Yoshifumi</div>
-      <div class="lesson-box"><a href="seats.html">19:30 BB2 Rock2</a><br>S.Kaori & Yoshifumi</div>
-      <div class="lesson-box"><a href="seats.html">20:00 BB2 SUMMER2</a><br>S.Kaori & Yoshifumi</div>
-    </div>
-  </div>
+  <div class="day-row" id="fixed-days"></div>
+  <div class="day-row" id="dynamic-days" style="display:none"></div>
 
-  <script src="script.js"></script>
+  <script>
+    const countdown = document.getElementById("countdown");
+    const dynamic = document.getElementById("dynamic-days");
+
+    function createDayColumn(dateStr, lessons = []) {
+      const col = document.createElement("div");
+      col.className = "day-column";
+
+      const head = document.createElement("div");
+      head.className = "day-header";
+      head.textContent = dateStr;
+      col.appendChild(head);
+
+      lessons.forEach(lesson => {
+        const box = document.createElement("div");
+        box.className = lesson.link ? "lesson-box highlight" : "lesson-box";
+        box.innerHTML = lesson.link ? `<a href=\"seats.html\">${lesson.text}</a><br>${lesson.instructor}` : lesson.text;
+        col.appendChild(box);
+      });
+      return col;
+    }
+
+    const fixedDays = document.getElementById("fixed-days");
+    for (let i = 16; i <= 30; i++) {
+      fixedDays.appendChild(createDayColumn(`6/${i} (${"日月火水木金土"[i % 7]})`));
+    }
+    fixedDays.appendChild(createDayColumn("7/1 (月)"));
+    fixedDays.appendChild(createDayColumn("7/2 (火)"));
+    fixedDays.appendChild(createDayColumn("7/3 (水)"));
+    fixedDays.appendChild(createDayColumn("7/4 (木)"));
+
+    const dynamicDays = document.getElementById("dynamic-days");
+    for (let i = 5; i <= 11; i++) {
+      if (i === 10) {
+        dynamicDays.appendChild(createDayColumn("7/10 (水)", [
+          { text: "18:00 FEEL HIGH", instructor: "S.Kaori & Yoshifumi", link: true },
+          { text: "19:30 BB2 Rock2", instructor: "S.Kaori & Yoshifumi", link: true },
+          { text: "20:00 BB2 SUMMER2", instructor: "S.Kaori & Yoshifumi", link: true }
+        ]));
+      } else {
+        dynamicDays.appendChild(createDayColumn(`7/${i} (${"金土日月火水木"[i - 5]})`));
+      }
+    }
+
+    let lastTrigger = null;
+    setInterval(() => {
+      const now = new Date();
+      const min = now.getMinutes();
+      const sec = now.getSeconds();
+      countdown.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+
+      if (min % 3 === 0 && sec === 0 && lastTrigger !== min) {
+        dynamic.style.display = "flex";
+        lastTrigger = min;
+        setTimeout(() => {
+          dynamic.style.display = "none";
+        }, 2 * 60 * 1000 + 1000);
+      }
+    }, 1000);
+  </script>
 </body>
 </html>
