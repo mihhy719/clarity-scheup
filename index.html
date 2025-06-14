@@ -6,41 +6,81 @@
   <meta name="robots" content="noindex, nofollow">
   <link rel="stylesheet" href="style.css">
   <style>
-    .lesson-row {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      background-color: #f0f4f8;
-      padding: 12px 16px;
-      margin-bottom: 8px;
-      border-radius: 6px;
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-color: #f0f0f0;
     }
-    .lesson-row a {
-      color: #007bff;
+    .header {
+      background: #fff;
+      padding: 10px;
+      text-align: center;
       font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      background-color: #ddd;
+      font-size: 0.9em;
+    }
+    .day-row {
+      display: flex;
+      background: #fff;
+      overflow-x: auto;
+      border-top: 1px solid #ccc;
+    }
+    .day-column {
+      flex: 0 0 auto;
+      min-width: 140px;
+      border-right: 1px solid #ccc;
+    }
+    .day-header {
+      background: #eee;
+      padding: 8px;
+      text-align: center;
+      font-size: 0.85em;
+      border-bottom: 1px solid #ccc;
+    }
+    .lesson-box {
+      padding: 6px;
+      margin: 6px;
+      background-color: #fff;
+      border-left: 6px solid #f60;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .lesson-box a {
       text-decoration: none;
+      color: #000;
+      font-weight: bold;
     }
-    .lesson-row:hover {
-      background-color: #dce7f1;
+    #countdown {
+      text-align: center;
+      margin: 10px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #007aff;
     }
-    .upcoming { margin-top: 30px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>スケア練習道場</h1>
-    <div id="countdown">00:00</div>
+  <div class="header">吉祥寺 (KCJ)</div>
+  <div class="toolbar">
+    <div>前週へ</div>
+    <div>今日に戻る</div>
+    <div>最終週へ</div>
+  </div>
+  <div id="countdown">00:00</div>
 
-    <h2>6月16日〜7月4日のレッスン</h2>
-    <div class="lesson-list">
-      <div class="lesson-row"><span>6/16（日）18:00</span><span>Dummy</span></div>
-      <div class="lesson-row"><span>6/17（月）18:00</span><span>Dummy</span></div>
-      <div class="lesson-row"><span>6/18（火）18:00</span><span>Dummy</span></div>
-      <!-- 必要に応じて日付追加 -->
+  <div class="day-row">
+    <div class="day-column">
+      <div class="day-header">7/10(水)</div>
+      <div class="lesson-box"><a href="seats.html">18:00 FEEL HIGH</a><br>S.Kaori & Yoshifumi</div>
+      <div class="lesson-box"><a href="seats.html">19:30 BB2 Rock2</a><br>S.Kaori & Yoshifumi</div>
+      <div class="lesson-box"><a href="seats.html">20:00 BB2 SUMMER2</a><br>S.Kaori & Yoshifumi</div>
     </div>
-
-    <div id="upcoming" class="upcoming"></div>
   </div>
 
   <script src="script.js"></script>
