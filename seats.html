@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>座席選択</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .seat-map {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 10px;
+      justify-content: center;
+      max-width: 400px;
+      margin: 20px auto;
+    }
+    .seat {
+      padding: 15px;
+      background-color: #eee;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      cursor: not-allowed;
+    }
+    .seat#seat4 {
+      cursor: pointer;
+      background-color: #cce5ff;
+      font-weight: bold;
+    }
+    .seat.active {
+      background-color: #ffdd57;
+    }
+    #confirmBtn {
+      display: block;
+      margin: 30px auto;
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #confirmBtn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>座席を選んでください</h1>
+    <div class="seat-map">
+      <div class="seat">1</div>
+      <div class="seat">2</div>
+      <div class="seat">3</div>
+      <div id="seat4" class="seat">4</div>
+      <div class="seat">5</div>
+      <div class="seat">6</div>
+      <div class="seat">7</div>
+      <div class="seat">8</div>
+    </div>
+    <button id="confirmBtn" disabled>予約を確定する</button>
+  </div>
+
+  <script>
+    const seat4 = document.getElementById("seat4");
+    const confirmBtn = document.getElementById("confirmBtn");
+
+    seat4.addEventListener("click", () => {
+      seat4.classList.add("active");
+      confirmBtn.disabled = false;
+    });
+
+    confirmBtn.addEventListener("click", () => {
+      const result = confirm("チケットで予約しますか？");
+      if (result) {
+        const win = Math.random() < 0.7;
+        if (win) {
+          alert("\u2728 4番、あなたの席になりました \u2728");
+        } else {
+          alert("\ud83d\ude22 席が埋まっていました。再挑戦を。");
+        }
+        window.location.href = "index.html";
+      }
+    });
+  </script>
+</body>
+</html>
