@@ -25,11 +25,16 @@
       background-color: #ddd;
       font-size: 0.9em;
     }
+    .scroll-container {
+      overflow-x: auto;
+      background: #fff;
+      position: relative;
+    }
+    .day-rows {
+      display: flex;
+    }
     .day-row {
       display: flex;
-      background: #fff;
-      overflow-x: auto;
-      border-top: 1px solid #ccc;
     }
     .day-column {
       flex: 0 0 auto;
@@ -57,11 +62,15 @@
       background-color: #fff;
       border-left: 6px solid #f60;
       color: #000;
+      cursor: pointer;
     }
     .lesson-box a {
       text-decoration: none;
       color: #000;
       font-weight: bold;
+      display: block;
+      width: 100%;
+      height: 100%;
     }
     #countdown {
       text-align: center;
@@ -81,8 +90,12 @@
   </div>
   <div id="countdown">00:00</div>
 
-  <div class="day-row" id="fixed-days"></div>
-  <div class="day-row" id="dynamic-days" style="display:none"></div>
+  <div class="scroll-container">
+    <div class="day-rows">
+      <div class="day-row" id="fixed-days"></div>
+      <div class="day-row" id="dynamic-days" style="display:none"></div>
+    </div>
+  </div>
 
   <script>
     const countdown = document.getElementById("countdown");
@@ -100,7 +113,10 @@
       lessons.forEach(lesson => {
         const box = document.createElement("div");
         box.className = lesson.link ? "lesson-box highlight" : "lesson-box";
-        box.innerHTML = lesson.link ? `<a href=\"seats.html\">${lesson.text}</a><br>${lesson.instructor}` : lesson.text;
+        if (lesson.link) {
+          box.onclick = () => window.location.href = "seats.html";
+        }
+        box.innerHTML = lesson.link ? `${lesson.text}<br>${lesson.instructor}` : lesson.text;
         col.appendChild(box);
       });
       return col;
