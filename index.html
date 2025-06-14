@@ -156,6 +156,38 @@
       closeModal();
     }
 
+    function getWeekday(dateString) {
+      const date = new Date(dateString);
+      return "日月火水木金土"[date.getDay()];
+    }
+
+    const fixedDays = document.getElementById("fixed-days");
+    for (let i = 0; i <= 18; i++) {
+      const date = new Date(2024, 5, 16 + i);
+      const mm = date.getMonth() + 1;
+      const dd = date.getDate();
+      const weekday = getWeekday(`${date.getFullYear()}-${mm}-${dd}`);
+      const label = `${mm}/${dd} (${weekday})`;
+
+      fixedDays.appendChild(createDayColumn(label, [
+        { text: "08:00 BB2 10s 4", instructor: "Shunsuke" },
+        { text: "10:30 BB1 House 2", instructor: "S.Risa" }
+      ]));
+    }
+
+    const dynamicDays = document.getElementById("dynamic-days");
+    for (let i = 5; i <= 11; i++) {
+      if (i === 10) {
+        dynamicDays.appendChild(createDayColumn("7/10 (水)", [
+          { text: "18:00 FEEL HIGH", instructor: "S.Kaori & Yoshifumi", link: true },
+          { text: "19:30 BB2 Rock2", instructor: "S.Kaori & Yoshifumi", link: true },
+          { text: "20:00 BB2 SUMMER2", instructor: "S.Kaori & Yoshifumi", link: true }
+        ]));
+      } else {
+        dynamicDays.appendChild(createDayColumn(`7/${i} (${"金土日月火水木"[i - 5]})`));
+      }
+    }
+
     function createDayColumn(dateStr, lessons = []) {
       const col = document.createElement("div");
       col.className = "day-column";
@@ -175,28 +207,6 @@
         col.appendChild(box);
       });
       return col;
-    }
-
-    const fixedDays = document.getElementById("fixed-days");
-    for (let i = 16; i <= 30; i++) {
-      fixedDays.appendChild(createDayColumn(`6/${i} (${"日月火水木金土"[i % 7]})`));
-    }
-    fixedDays.appendChild(createDayColumn("7/1 (月)"));
-    fixedDays.appendChild(createDayColumn("7/2 (火)"));
-    fixedDays.appendChild(createDayColumn("7/3 (水)"));
-    fixedDays.appendChild(createDayColumn("7/4 (木)"));
-
-    const dynamicDays = document.getElementById("dynamic-days");
-    for (let i = 5; i <= 11; i++) {
-      if (i === 10) {
-        dynamicDays.appendChild(createDayColumn("7/10 (水)", [
-          { text: "18:00 FEEL HIGH", instructor: "S.Kaori & Yoshifumi", link: true },
-          { text: "19:30 BB2 Rock2", instructor: "S.Kaori & Yoshifumi", link: true },
-          { text: "20:00 BB2 SUMMER2", instructor: "S.Kaori & Yoshifumi", link: true }
-        ]));
-      } else {
-        dynamicDays.appendChild(createDayColumn(`7/${i} (${"金土日月火水木"[i - 5]})`));
-      }
     }
 
     let lastTrigger = null;
