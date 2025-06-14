@@ -29,18 +29,19 @@
       overflow-x: auto;
       background: #fff;
       position: relative;
-      max-width: 420px; 
+      white-space: nowrap;
     }
     .day-rows {
-      display: flex;
-      min-width: 420px; /* 140px * 3 days */
+      display: inline-flex;
     }
     .day-row {
-      display: flex;
+      display: inline-flex;
     }
     .day-column {
-      flex: 0 0 140px;
+      flex: 0 0 auto;
+      min-width: 140px;
       border-right: 1px solid #ccc;
+      display: inline-block;
     }
     .day-header {
       background: #eee;
@@ -213,14 +214,14 @@
     }
 
     const lessonSamples = [
-      { time: "08:45 - 09:30", text: "BB1 Comp 1", instructor: "S.Risa" },
-      { time: "10:00 - 10:45", text: "BB2 10s 4", instructor: "Shunsuke" },
-      { time: "11:15 - 12:00", text: "BB1 House 1", instructor: "Ryo" },
-      { time: "12:30 - 13:15", text: "BB2 CVHS", instructor: "Hiromu" },
-      { time: "15:00 - 15:45", text: "BB1 10s 2", instructor: "Hiromu" },
-      { time: "16:30 - 17:15", text: "BB2 NOW 1", instructor: "Hiromu" },
-      { time: "18:30 - 19:15", text: "BB2 10s 3", instructor: "Meg" },
-      { time: "19:45 - 20:30", text: "BB1 Comp 1", instructor: "S.Risa" }
+      { time: "08:45 - 09:30", text: "BB1 Comp 1", instructor: "S.Risa", color: "#ffff88" },
+      { time: "10:00 - 10:45", text: "BB2 10s 4", instructor: "Shunsuke", color: "#ff9900" },
+      { time: "11:15 - 12:00", text: "BB1 House 1", instructor: "Ryo", color: "#ffff88" },
+      { time: "12:30 - 13:15", text: "BB2 CVHS", instructor: "Hiromu", color: "#ff9900" },
+      { time: "15:00 - 15:45", text: "BB1 10s 2", instructor: "Hiromu", color: "#ffff88" },
+      { time: "16:30 - 17:15", text: "BB2 NOW 1", instructor: "Hiromu", color: "#ff9900" },
+      { time: "18:30 - 19:15", text: "BB2 10s 3", instructor: "Meg", color: "#ff9900" },
+      { time: "19:45 - 20:30", text: "BB1 Comp 1", instructor: "S.Risa", color: "#ffff88" }
     ];
 
     function renderSchedule(container, startDate, endDate) {
