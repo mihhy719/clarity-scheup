@@ -36,8 +36,9 @@
     }
     .day-column {
       flex: 0 0 auto;
-      width: 140px;
+      width: 120px;
       border-right: 1px solid #ccc;
+      display: inline-block;
     }
     .day-header {
       background: #eee;
@@ -49,24 +50,78 @@
     .lesson-box {
       padding: 8px;
       margin: 6px;
-      background-color: #f9f9f9;
-      border: 1px solid #ddd;
       border-radius: 4px;
-      font-size: 0.8em;
-      color: #000;
+      font-size: 0.85em;
       text-align: center;
-      line-height: 1.5em;
-      min-height: 60px;
+      height: 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: #000;
     }
-    .orange { background-color: #ffa500; color: black; font-weight: bold; }
-    .yellow { background-color: #ffff99; color: black; font-weight: bold; }
-    .blue { background-color: #00bfff; color: black; font-weight: bold; }
+    .orange { background-color: #f90; color: black; }
+    .yellow { background-color: #ff9; color: black; }
+    .blue { background-color: #0af; color: white; }
+    .highlight { cursor: pointer; border: 2px solid #000; }
     #countdown {
       text-align: center;
       margin: 10px;
       font-size: 1.2em;
       font-weight: bold;
       color: #007aff;
+    }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #fff;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 8px;
+      padding: 10px;
+      overflow: hidden;
+    }
+    .modal-content h2 {
+      font-size: 0.95em;
+      margin: 0;
+      padding: 10px;
+      text-align: center;
+    }
+    .seat-map {
+      background: #000;
+      padding: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+    .seat {
+      background: white;
+      color: black;
+      width: 30px;
+      height: 30px;
+      line-height: 30px;
+      margin: 4px;
+      text-align: center;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .modal-actions {
+      text-align: center;
+      margin: 10px;
+    }
+    .modal button {
+      padding: 8px 16px;
+      font-size: 1em;
     }
   </style>
 </head>
@@ -78,44 +133,95 @@
     <div>最終週へ</div>
   </div>
   <div id="countdown">00:00</div>
-
   <div class="scroll-container">
-    <div class="day-rows" id="fixed-days">
-      <!-- Sample three days with 8 lessons -->
-      <div class="day-column">
-        <div class="day-header">6/16 (月)</div>
-        <div class="lesson-box orange">08:45 - 09:30<br>BB1 Comp 1<br>S.Risa</div>
-        <div class="lesson-box orange">10:00 - 10:45<br>BB2 10s 4<br>Shunsuke</div>
-        <div class="lesson-box yellow">11:15 - 12:00<br>BB1 House 1<br>Ryo</div>
-        <div class="lesson-box yellow">12:30 - 13:15<br>BB1 10s 2<br>Hiromu</div>
-        <div class="lesson-box blue">15:00 - 15:45<br>BSB Rock 1<br>Hiromu</div>
-        <div class="lesson-box orange">16:30 - 17:15<br>BB2 CVHS<br>Ryo</div>
-        <div class="lesson-box orange">18:30 - 19:15<br>BB2 10s 3<br>Meg</div>
-        <div class="lesson-box yellow">19:45 - 20:30<br>BB1 Comp 1<br>S.Risa</div>
+    <div class="day-rows" id="calendar"></div>
+  </div>
+
+  <div class="modal" id="seatModal">
+    <div class="modal-content">
+      <h2>※お好きなバイク番号を選んで予約を確定して下さい。</h2>
+      <div class="seat-map">
+        ${Array.from({ length: 62 }, (_, i) => `<div class="seat">${i + 1}</div>`).join('')}
       </div>
-      <div class="day-column">
-        <div class="day-header">6/17 (火)</div>
-        <div class="lesson-box orange">08:00 - 08:45<br>BB2 10s 4<br>Shunsuke</div>
-        <div class="lesson-box yellow">09:00 - 09:45<br>BB1 House 2<br>S.Risa</div>
-        <div class="lesson-box orange">10:00 - 10:45<br>BB2 LDGG 2<br>S.Risa</div>
-        <div class="lesson-box yellow">11:15 - 12:00<br>BB1 House 1<br>Ryo</div>
-        <div class="lesson-box orange">12:30 - 13:15<br>BB2 10s 3<br>Meg</div>
-        <div class="lesson-box orange">14:00 - 14:45<br>BB2 10s 3<br>Meg</div>
-        <div class="lesson-box yellow">15:00 - 15:45<br>BB1 10s 2<br>Hiromu</div>
-        <div class="lesson-box blue">16:15 - 17:00<br>BSB Rock 1<br>Hiromu</div>
-      </div>
-      <div class="day-column">
-        <div class="day-header">6/18 (水)</div>
-        <div class="lesson-box yellow">08:00 - 08:45<br>BB1 10s 1<br>Nao</div>
-        <div class="lesson-box orange">09:00 - 09:45<br>BB2 LDGG 2<br>S.Risa</div>
-        <div class="lesson-box yellow">10:00 - 10:45<br>BB1 Comp 1<br>S.Risa</div>
-        <div class="lesson-box blue">11:15 - 12:00<br>BSB Comp 1<br>S.Risa</div>
-        <div class="lesson-box orange">12:30 - 13:15<br>BB2 NOW 1<br>Hiromu</div>
-        <div class="lesson-box orange">14:00 - 14:45<br>BB2 USHER 2<br>Hiromu</div>
-        <div class="lesson-box orange">15:00 - 15:45<br>BB2 CVHS<br>Ryo</div>
-        <div class="lesson-box yellow">16:30 - 17:15<br>BB1 House 4<br>Hiromu</div>
+      <div class="modal-actions">
+        <button onclick="closeModal()">閉じる</button>
+        <button disabled>予約を確定する</button>
       </div>
     </div>
   </div>
+
+  <script>
+    const calendar = document.getElementById("calendar");
+    const countdown = document.getElementById("countdown");
+    const modal = document.getElementById("seatModal");
+
+    function createLesson(time, title, instructor, color = "orange", clickable = false) {
+      const div = document.createElement("div");
+      div.className = `lesson-box ${color}` + (clickable ? " highlight" : "");
+      div.innerHTML = `${time}<br>${title}<br>${instructor}`;
+      if (clickable) div.onclick = () => modal.style.display = "flex";
+      return div;
+    }
+
+    function createColumn(date, lessons = []) {
+      const col = document.createElement("div");
+      col.className = "day-column";
+      const header = document.createElement("div");
+      header.className = "day-header";
+      header.textContent = date;
+      col.appendChild(header);
+      lessons.forEach(lesson => col.appendChild(lesson));
+      return col;
+    }
+
+    function closeModal() { modal.style.display = "none"; }
+
+    function populateBaseCalendar() {
+      calendar.innerHTML = "";
+      const sampleLessons = [
+        createLesson("08:45 - 09:30", "BB1 Comp 1", "S.Risa", "yellow"),
+        createLesson("10:00 - 10:45", "BB2 10s 4", "Shunsuke", "orange"),
+        createLesson("11:15 - 12:00", "BB1 House 1", "Ryo", "yellow"),
+        createLesson("12:30 - 13:15", "BB2 CVHS", "Hiromu", "orange"),
+        createLesson("15:00 - 15:45", "BSB Rock 1", "Hiromu", "blue"),
+        createLesson("16:30 - 17:15", "BB2 NOW 1", "Hiromu", "orange"),
+        createLesson("18:30 - 19:15", "BB2 10s 3", "Meg", "orange"),
+        createLesson("19:45 - 20:30", "BB1 Comp 1", "S.Risa", "yellow")
+      ];
+      ["6/16 (月)", "6/17 (火)", "6/18 (水)", "6/19 (木)", "6/20 (金)", "6/21 (土)", "6/22 (日)", "6/23 (月)", "6/24 (火)", "6/25 (水)", "6/26 (木)", "6/27 (金)", "6/28 (土)", "6/29 (日)", "6/30 (月)", "7/1 (火)", "7/2 (水)", "7/3 (木)", "7/4 (金)"]
+        .forEach(date => calendar.appendChild(createColumn(date, sampleLessons)));
+    }
+
+    function showDynamicWeek() {
+      const dates = [
+        "7/5 (土)", "7/6 (日)", "7/7 (月)", "7/8 (火)", "7/9 (水)", "7/10 (木)", "7/11 (金)"
+      ];
+      dates.forEach(date => {
+        const isTarget = date.startsWith("7/10");
+        const lessons = isTarget ? [
+          createLesson("18:00 - 19:00", "FEEL HIGH", "S.Kaori", "yellow", true),
+          createLesson("19:30 - 20:15", "BB2 Rock2", "Yoshifumi & S.Kaori", "orange", true),
+          createLesson("20:30 - 21:15", "BB2 SUMMER2", "Yoshifumi", "orange", true)
+        ] : [];
+        calendar.appendChild(createColumn(date, lessons));
+      });
+    }
+
+    let lastTrigger = null;
+    setInterval(() => {
+      const now = new Date();
+      const min = now.getMinutes();
+      const sec = now.getSeconds();
+      countdown.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+      const isTrigger = min % 3 === 0 && sec === 0;
+      if (isTrigger && lastTrigger !== min) {
+        lastTrigger = min;
+        showDynamicWeek();
+        setTimeout(populateBaseCalendar, 2 * 60 * 1000);
+      }
+    }, 1000);
+
+    populateBaseCalendar();
+  </script>
 </body>
 </html>
