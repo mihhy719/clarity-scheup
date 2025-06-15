@@ -205,21 +205,35 @@
 function showFinalConfirmation() {
   const modalContent = document.getElementById("modalContent");
   modalContent.innerHTML = `
-    <h2 style="font-size: 1.2em; font-weight: bold;">チケット消費確認</h2>
-    <p style="margin-bottom: 16px;">以下のチケットを使用して予約を確定します。<br>よろしいですか？</p>
-    <div style="margin: 16px 0; font-weight: bold; border: 1px solid #ccc; padding: 12px;">
-      イベントチケット × 1枚
+    <div style="text-align: left; margin-bottom: 24px;">
+      <h2 style="font-size: 1.2em; font-weight: bold;">チケット消費確認</h2>
+      <p style="margin-top: 12px;">以下のチケットを使用して予約を確定します。<br>よろしいですか？</p>
+      <div style="margin: 16px 0; font-weight: bold; border: 1px solid #ccc; padding: 12px; text-align: center;">
+        イベントチケット × 1枚
+      </div>
+      <p style="color: red; font-size: 0.85em;">
+        ※受講完了時点で有効期限の短いチケットが自動的に消費されます。
+      </p>
+      <div style="margin-top: 16px;">
+        <strong>所持チケット</strong><br>
+        ・2025年12月12日まで × 1枚
+      </div>
     </div>
-    <p style="color: red; font-size: 0.85em; margin-bottom: 8px;">
-      ※受講完了時点で有効期限の短いチケットが<br>自動的に消費されます。
-    </p>
-    <div style="margin-bottom: 20px;">
-      <strong>所持チケット</strong><br>
-      ・2025年12月12日まで × 1枚
-    </div>
-    <div class="modal-actions vertical">
-      <button onclick="confirmSeatFinal()">予約を確定する</button>
-      <button onclick="closeModal()">閉じる</button>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <button onclick="closeModal()" style="background: none; border: none; color: #666; font-size: 0.95em; cursor: pointer;">
+        閉じる
+      </button>
+      <button onclick="confirmSeatFinal()" style="
+        background-color: #000;
+        color: #fff;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-size: 1em;
+        cursor: pointer;
+      ">
+        予約を確定する
+      </button>
     </div>
   `;
 }
