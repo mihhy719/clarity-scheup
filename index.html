@@ -242,10 +242,43 @@ function showFinalConfirmation() {
   `;
 }
 
-    function confirmSeatFinal() {
-      const modalContent = document.getElementById("modalContent");
-      modalContent.innerHTML = `<h2>✨ 予約が完了しました ✨</h2>`;
-    }
+function confirmSeatFinal() {
+  const modalContent = document.getElementById("modalContent");
+  modalContent.innerHTML = `
+    <div style="text-align: center; padding: 24px;">
+      <h2 style="font-size: 1.2em; margin-bottom: 16px;">予約完了</h2>
+      <div style="font-size: 48px; color: #888; margin-bottom: 16px;">✓</div>
+      <p style="font-size: 1em; margin-bottom: 32px;">予約が完了しました。</p>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <button onclick="closeModal()" style="
+          width: 100%;
+          background-color: #000;
+          color: #fff;
+          border: none;
+          padding: 14px 0;
+          font-size: 1em;
+          font-weight: bold;
+          border-radius: 6px;
+          cursor: pointer;
+        ">
+          続けて予約する
+        </button>
+        <button onclick="window.location.href='https://feelcycle.com/mypage'" style="
+          width: 100%;
+          background: none;
+          color: #000;
+          border: 1px solid #ccc;
+          padding: 14px 0;
+          font-size: 1em;
+          border-radius: 6px;
+          cursor: pointer;
+        ">
+          マイページへ
+        </button>
+      </div>
+    </div>
+  `;
+}
 
     function closeModal() {
       document.getElementById("seatModal").style.display = "none";
