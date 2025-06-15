@@ -167,22 +167,63 @@
     const dynamic = document.getElementById("dynamic-days");
     const fixedDays = document.getElementById("fixed-days");
 
-    function openModal() {
-      document.getElementById("seatModal").style.display = "flex";
-      const seatGrid = document.getElementById("seatGrid");
-      const seatActions = document.getElementById("seatActionButtons");
-      const modalContent = document.getElementById("modalContent");
+function openModal() {
+  document.getElementById("seatModal").style.display = "flex";
+  const modalContent = document.getElementById("modalContent");
 
-      modalContent.innerHTML = `
-        <h2>※お好きなバイク番号を選んで予約を確定して下さい。</h2>
-        <div class="modal-seat-grid" id="seatGrid"></div>
-        <div class="modal-actions" id="seatActionButtons" style="display:none;">
-          <button onclick="showFinalConfirmation()">予約を確定する</button>
+  modalContent.innerHTML = `
+    <div style="padding: 16px 0; color: #fff; background: #000; font-weight: bold; font-size: 0.9em;">
+      ※お好きなバイク番号を選んで予約を確定して下さい。
+    </div>
+    <div style="background: #000; padding: 16px; display: flex; justify-content: center;">
+      <div style="position: relative; width: 320px;">
+        <div style="position: absolute; top: 0; left: 110px; font-size: 10px; color: #fff;">Shunsuke</div>
+        <div style="display: grid; grid-template-columns: repeat(6, 40px); grid-gap: 6px; justify-content: center;">
+          ${Array.from({ length: 62 }, (_, i) => {
+            const n = i + 1;
+            const isVisible = [4].includes(n);
+            return `<button style="
+              width: 36px;
+              height: 36px;
+              border-radius: 50%;
+              border: none;
+              font-size: 12px;
+              font-weight: bold;
+              background: ${n === 4 ? '#f66' : '#eee'};
+              color: ${n === 4 ? '#fff' : '#000'};
+              ${isVisible ? 'cursor:pointer;' : 'opacity:0.3; pointer-events:none;'}
+            " ${isVisible ? `onclick="selectBike(${n}, this)"` : ''}>${n}</button>`;
+          }).join('')}
         </div>
-        <div class="modal-actions">
-          <button onclick="closeModal()">閉じる</button>
-        </div>
-      `;
+      </div>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px;">
+      <button onclick="closeModal()" style="background: none; border: none; color: #666; font-size: 1em; cursor: pointer;">
+        閉じる
+      </button>
+      <button id="confirmBtn" onclick="showFinalConfirmation()" style="
+        background-color: #000;
+        color: #fff;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-size: 1em;
+        cursor: not-allowed;
+        opacity: 0.3;
+      " disabled>
+        予約を確定する
+      </button>
+    </div>
+  `;
+}
+    function selectBike(number, el) {
+  document.querySelectorAll("button").forEach(btn => btn.style.outline = "none");
+  el.style.outline = "2px solid #fff";
+  const btn = document.getElementById("confirmBtn");
+  btn.disabled = false;
+  btn.style.opacity = "1";
+  btn.style.cursor = "pointer";
+}
 
       const seatGridNew = document.getElementById("seatGrid");
       const seatActionsNew = document.getElementById("seatActionButtons");
