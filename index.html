@@ -128,6 +128,12 @@
       margin: 0 8px;
       font-size: 1em;
     }
+    .modal-actions.vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
   </style>
 </head>
 <body>
@@ -196,15 +202,15 @@
       }
     }
 
-    function showFinalConfirmation() {
-      const modalContent = document.getElementById("modalContent");
-      modalContent.innerHTML = `
-        <div class="modal-actions">
-          <button onclick="confirmSeatFinal()">チケットで予約する</button>
-          <button onclick="closeModal()">閉じる</button>
-        </div>
-      `;
-    }
+function showFinalConfirmation() {
+  const modalContent = document.getElementById("modalContent");
+  modalContent.innerHTML = `
+    <div class="modal-actions vertical">
+      <button onclick="confirmSeatFinal()">チケットで予約する</button>
+      <button onclick="closeModal()">閉じる</button>
+    </div>
+  `;
+}
 
     function confirmSeatFinal() {
       const modalContent = document.getElementById("modalContent");
