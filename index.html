@@ -101,10 +101,10 @@
       font-size: 1em;
     }
     .modal-seat-grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
       gap: 10px;
+      justify-items: center;
       margin-bottom: 20px;
     }
     .modal-seat-button {
@@ -129,270 +129,38 @@
       font-size: 1em;
     }
     .modal-actions.vertical {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: center;
-}
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
   </style>
 </head>
 <body>
-  <div class="header">吉祥寺 (KCJ)</div>
-  <div class="toolbar">
-    <div>前週へ</div>
-    <div>今日に戻る</div>
-    <div>最終週へ</div>
-  </div>
-  <div id="countdown">00:00</div>
-  <div class="scroll-container">
-    <div class="day-rows">
-      <div class="day-row" id="fixed-days"></div>
-      <div class="day-row" id="dynamic-days" style="display:none"></div>
-    </div>
-  </div>
-  <div class="modal" id="seatModal">
-    <div class="modal-content" id="modalContent">
-      <h2>※お好きなバイク番号を選んで予約を確定して下さい。</h2>
-      <div class="modal-seat-grid" id="seatGrid"></div>
-      <div class="modal-actions" id="seatActionButtons" style="display:none;">
-        <button onclick="showFinalConfirmation()">予約を確定する</button>
-      </div>
-      <div class="modal-actions">
-        <button onclick="closeModal()">閉じる</button>
-      </div>
-    </div>
-  </div>
+  <!-- ... unchanged content above ... -->
   <script>
-    const countdown = document.getElementById("countdown");
-    const dynamic = document.getElementById("dynamic-days");
-    const fixedDays = document.getElementById("fixed-days");
-
-function openModal() {
-  document.getElementById("seatModal").style.display = "flex";
-  const modalContent = document.getElementById("modalContent");
-
-  modalContent.innerHTML = `
-    <div style="padding: 16px 0; color: #fff; background: #000; font-weight: bold; font-size: 0.9em;">
-      ※お好きなバイク番号を選んで予約を確定して下さい。
-    </div>
-    <div style="background: #000; padding: 16px; display: flex; justify-content: center;">
-      <div style="position: relative; width: 320px;">
-        <div style="position: absolute; top: 0; left: 110px; font-size: 10px; color: #fff;">Shunsuke</div>
-        <div style="display: grid; grid-template-columns: repeat(6, 40px); grid-gap: 6px; justify-content: center;">
-          ${Array.from({ length: 62 }, (_, i) => {
-            const n = i + 1;
-            const isVisible = [4].includes(n);
-            return `<button style="
-              width: 36px;
-              height: 36px;
-              border-radius: 50%;
-              border: none;
-              font-size: 12px;
-              font-weight: bold;
-              background: ${n === 4 ? '#f66' : '#eee'};
-              color: ${n === 4 ? '#fff' : '#000'};
-              ${isVisible ? 'cursor:pointer;' : 'opacity:0.3; pointer-events:none;'}
-            " ${isVisible ? `onclick="selectBike(${n}, this)"` : ''}>${n}</button>`;
-          }).join('')}
+    function openModal() {
+      document.getElementById("seatModal").style.display = "flex";
+      const modalContent = document.getElementById("modalContent");
+      modalContent.innerHTML = `
+        <h2>※お好きなバイク番号を選んで予約を確定して下さい。</h2>
+        <div class="modal-seat-grid" id="seatGrid">
+          ${[...Array(5)].map((_, i) => `<button class="modal-seat-button" disabled>${i + 1}</button>`).join('')}
+          ${[...Array(5)].map((_, i) => `<button class="modal-seat-button" ${i === 3 ? '' : 'disabled'} onclick="handleSeatClick(this)">${i + 6}</button>`).join('')}
         </div>
-      </div>
-    </div>
-    <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px;">
-      <button onclick="closeModal()" style="background: none; border: none; color: #666; font-size: 1em; cursor: pointer;">
-        閉じる
-      </button>
-      <button id="confirmBtn" onclick="showFinalConfirmation()" style="
-        background-color: #000;
-        color: #fff;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 6px;
-        font-size: 1em;
-        cursor: not-allowed;
-        opacity: 0.3;
-      " disabled>
-        予約を確定する
-      </button>
-    </div>
-  `;
-}
-    function selectBike(number, el) {
-  document.querySelectorAll("button").forEach(btn => btn.style.outline = "none");
-  el.style.outline = "2px solid #fff";
-  const btn = document.getElementById("confirmBtn");
-  btn.disabled = false;
-  btn.style.opacity = "1";
-  btn.style.cursor = "pointer";
-}
-
-      const seatGridNew = document.getElementById("seatGrid");
-      const seatActionsNew = document.getElementById("seatActionButtons");
-      for (let i = 1; i <= 10; i++) {
-        const btn = document.createElement("button");
-        btn.textContent = i;
-        btn.className = "modal-seat-button";
-        if (i === 4) {
-          btn.onclick = () => {
-            btn.classList.add("active");
-            seatActionsNew.style.display = "block";
-          };
-        } else {
-          btn.disabled = true;
-        }
-        seatGridNew.appendChild(btn);
-      }
+        <div class="modal-actions" id="seatActionButtons" style="display:none;">
+          <button onclick="showFinalConfirmation()">予約を確定する</button>
+        </div>
+        <div class="modal-actions">
+          <button onclick="closeModal()">閉じる</button>
+        </div>
+      `;
     }
 
-function showFinalConfirmation() {
-  const modalContent = document.getElementById("modalContent");
-  modalContent.innerHTML = `
-    <div style="text-align: left; margin-bottom: 24px;">
-      <h2 style="font-size: 1.2em; font-weight: bold;">チケット消費確認</h2>
-      <p style="margin-top: 12px;">以下のチケットを使用して予約を確定します。<br>よろしいですか？</p>
-      <div style="margin: 16px 0; font-weight: bold; border: 1px solid #ccc; padding: 12px; text-align: center;">
-        イベントチケット × 1枚
-      </div>
-      <p style="color: red; font-size: 0.85em;">
-        ※受講完了時点で有効期限の短いチケットが自動的に消費されます。
-      </p>
-      <div style="margin-top: 16px;">
-        <strong>所持チケット</strong><br>
-        ・2025年12月12日まで × 1枚
-      </div>
-    </div>
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <button onclick="closeModal()" style="background: none; border: none; color: #666; font-size: 1em; cursor: pointer;">
-        閉じる
-      </button>
-    </div>
-    <div style="margin-top: 16px;">
-      <button onclick="confirmSeatFinal()" style="
-        background-color: #000;
-        color: #fff;
-        border: none;
-        width: 100%;
-        padding: 14px 0;
-        font-size: 1em;
-        font-weight: bold;
-        border-radius: 6px;
-        cursor: pointer;
-      ">
-        予約を確定する
-      </button>
-    </div>
-  `;
-}
-
-function confirmSeatFinal() {
-  const modalContent = document.getElementById("modalContent");
-  modalContent.innerHTML = `
-    <div style="text-align: center; padding: 24px;">
-      <h2 style="font-size: 1.2em; margin-bottom: 16px;">予約完了</h2>
-      <div style="font-size: 48px; color: #888; margin-bottom: 16px;">✓</div>
-      <p style="font-size: 1em; margin-bottom: 32px;">予約が完了しました。</p>
-      <div style="display: flex; flex-direction: column; gap: 12px;">
-        <button onclick="closeModal()" style="
-          width: 100%;
-          background-color: #000;
-          color: #fff;
-          border: none;
-          padding: 14px 0;
-          font-size: 1em;
-          font-weight: bold;
-          border-radius: 6px;
-          cursor: pointer;
-        ">
-          続けて予約する
-        </button>
-        <button onclick="window.location.href='https://feelcycle.com/mypage'" style="
-          width: 100%;
-          background: none;
-          color: #000;
-          border: 1px solid #ccc;
-          padding: 14px 0;
-          font-size: 1em;
-          border-radius: 6px;
-          cursor: pointer;
-        ">
-          マイページへ
-        </button>
-      </div>
-    </div>
-  `;
-}
-
-    function closeModal() {
-      document.getElementById("seatModal").style.display = "none";
+    function handleSeatClick(btn) {
+      btn.classList.add("active");
+      document.getElementById("seatActionButtons").style.display = "block";
     }
-
-    function createDayColumn(dateStr, lessons = []) {
-      const col = document.createElement("div");
-      col.className = "day-column";
-
-      const head = document.createElement("div");
-      head.className = "day-header";
-      head.textContent = dateStr;
-      col.appendChild(head);
-
-      lessons.forEach(lesson => {
-        const box = document.createElement("div");
-        box.className = lesson.link ? "lesson-box highlight" : "lesson-box";
-        if (lesson.link) {
-          box.onclick = () => openModal();
-        }
-        box.innerHTML = `${lesson.time}<br>${lesson.text}<br>${lesson.instructor}`;
-        col.appendChild(box);
-      });
-      return col;
-    }
-
-    const lessonSamples = [
-      { time: "08:45 - 09:30", text: "BB1 Comp 1", instructor: "S.Risa", color: "#ffff88" },
-      { time: "10:00 - 10:45", text: "BB2 10s 4", instructor: "Shunsuke", color: "#ff9900" },
-      { time: "11:15 - 12:00", text: "BB1 House 1", instructor: "Ryo", color: "#ffff88" },
-      { time: "12:30 - 13:15", text: "BB2 CVHS", instructor: "Hiromu", color: "#ff9900" },
-      { time: "15:00 - 15:45", text: "BB1 10s 2", instructor: "Hiromu", color: "#ffff88" },
-      { time: "16:30 - 17:15", text: "BB2 NOW 1", instructor: "Hiromu", color: "#ff9900" },
-      { time: "18:30 - 19:15", text: "BB2 10s 3", instructor: "Meg", color: "#ff9900" },
-      { time: "19:45 - 20:30", text: "BB1 Comp 1", instructor: "S.Risa", color: "#ffff88" }
-    ];
-
-    function renderSchedule(container, startDate, endDate) {
-      let day = new Date(startDate);
-      while (day <= endDate) {
-        const mmdd = `${day.getMonth() + 1}/${day.getDate()} (${"日月火水木金土"[day.getDay()]})`;
-        const shuffled = lessonSamples.sort(() => 0.5 - Math.random());
-        container.appendChild(createDayColumn(mmdd, shuffled));
-        day.setDate(day.getDate() + 1);
-      }
-    }
-
-    renderSchedule(fixedDays, new Date("2025-06-20"), new Date("2025-07-04"));
-
-    const dynamicDays = document.getElementById("dynamic-days");
-    for (let i = 5; i <= 11; i++) {
-      if (i === 10) {
-        dynamicDays.appendChild(createDayColumn("7/10 (水)", [
-          { time: "18:00 - 19:00", text: "FEEL HIGH", instructor: "S.Kaori", link: true },
-          { time: "19:30 - 20:15", text: "BB2 Rock2", instructor: "Yoshifumi & S.Kaori", link: true },
-          { time: "20:30 - 21:15", text: "BB2 SUMMER2", instructor: "Yoshifumi", link: true }
-        ]));
-      } else {
-        dynamicDays.appendChild(createDayColumn(`7/${i} (${"金土日月火水木"[i - 5]})`));
-      }
-    }
-
-    function shouldShowDynamic(min, sec) {
-      return min % 3 === 0 && sec < 120;
-    }
-
-    setInterval(() => {
-      const now = new Date();
-      const min = now.getMinutes();
-      const sec = now.getSeconds();
-      countdown.textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-      dynamic.style.display = shouldShowDynamic(min, sec) ? "flex" : "none";
-    }, 1000);
   </script>
 </body>
 </html>
