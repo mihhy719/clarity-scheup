@@ -100,13 +100,22 @@
       margin-bottom: 20px;
       font-size: 1em;
     }
-    .modal-seat-grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
+.modal-seat-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  justify-items: center;
+  margin-bottom: 20px;
+}
+.modal-seat-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #eee;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
     .modal-seat-button {
       width: 40px;
       height: 40px;
@@ -167,40 +176,40 @@
     const dynamic = document.getElementById("dynamic-days");
     const fixedDays = document.getElementById("fixed-days");
 
-    function openModal() {
-      document.getElementById("seatModal").style.display = "flex";
-      const seatGrid = document.getElementById("seatGrid");
-      const seatActions = document.getElementById("seatActionButtons");
-      const modalContent = document.getElementById("modalContent");
+function openModal() {
+  document.getElementById("seatModal").style.display = "flex";
+  const seatGrid = document.getElementById("seatGrid");
+  const seatActions = document.getElementById("seatActionButtons");
+  const modalContent = document.getElementById("modalContent");
 
-      modalContent.innerHTML = `
-        <h2>※お好きなバイク番号を選んで予約を確定して下さい。</h2>
-        <div class="modal-seat-grid" id="seatGrid"></div>
-        <div class="modal-actions" id="seatActionButtons" style="display:none;">
-          <button onclick="showFinalConfirmation()">予約を確定する</button>
-        </div>
-        <div class="modal-actions">
-          <button onclick="closeModal()">閉じる</button>
-        </div>
-      `;
+  modalContent.innerHTML = `
+    <h2>※お好きなバイク番号を選んで予約を確定して下さい。</h2>
+    <div class="modal-seat-grid" id="seatGrid"></div>
+    <div class="modal-actions" id="seatActionButtons" style="display:none;">
+      <button onclick="showFinalConfirmation()">予約を確定する</button>
+    </div>
+    <div class="modal-actions">
+      <button onclick="closeModal()">閉じる</button>
+    </div>
+  `;
 
-      const seatGridNew = document.getElementById("seatGrid");
-      const seatActionsNew = document.getElementById("seatActionButtons");
-      for (let i = 1; i <= 10; i++) {
-        const btn = document.createElement("button");
-        btn.textContent = i;
-        btn.className = "modal-seat-button";
-        if (i === 4) {
-          btn.onclick = () => {
-            btn.classList.add("active");
-            seatActionsNew.style.display = "block";
-          };
-        } else {
-          btn.disabled = true;
-        }
-        seatGridNew.appendChild(btn);
-      }
+  const seatGridNew = document.getElementById("seatGrid");
+  const seatActionsNew = document.getElementById("seatActionButtons");
+  for (let i = 1; i <= 10; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    btn.className = "modal-seat-button";
+    if (i === 4) {
+      btn.onclick = () => {
+        btn.classList.add("active");
+        seatActionsNew.style.display = "block";
+      };
+    } else {
+      btn.disabled = true;
     }
+    seatGridNew.appendChild(btn);
+  }
+}
 
 function showFinalConfirmation() {
   const modalContent = document.getElementById("modalContent");
